@@ -718,6 +718,120 @@ daniel`}</pre>
         </div>
       </div>
 
+      {/* Inbound Content — Dual Track */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <Target size={16} className="text-emerald-400" />
+          <h3 className="text-sm font-semibold text-white">Inbound Content (Dual Track)</h3>
+        </div>
+        <p className="text-xs text-zinc-400 mb-4">Outbound drives the first touch. Inbound catches everyone who Googles us after, plus organic traffic from prospects searching for alternatives. These two tracks converge at the demo.</p>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-4">
+          {/* SEO Blog */}
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/10 overflow-hidden">
+            <div className="px-4 py-3 border-b border-emerald-500/10 bg-emerald-950/20">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-medium text-emerald-300">SEO</span>
+                <span className="text-xs font-semibold text-white">Comparison Blog</span>
+              </div>
+              <p className="text-[10px] text-zinc-500">Target: &quot;crustdata alternative&quot; keyword</p>
+            </div>
+            <div className="p-4 space-y-2">
+              <p className="text-xs text-zinc-300 font-medium">&quot;Minerva vs CrustData: When B2B Data Isn&apos;t Enough&quot;</p>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">Full breakdown: field depth (2,168 vs 90), contact graph, match rates (70-80% vs 20-30% on mixed files), consumer data gap, pricing. Starts by giving CrustData credit, then walks through where it breaks down.</p>
+              <button
+                onClick={() => onOpenFile("/files/phase-3b-content/comparison-blog-crustdata.md", "Comparison Blog — CrustData")}
+                className="flex items-center gap-1.5 text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors mt-1"
+              >
+                <Eye size={10} /> Read full article
+              </button>
+            </div>
+          </div>
+
+          {/* Landing Page */}
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/10 overflow-hidden">
+            <div className="px-4 py-3 border-b border-emerald-500/10 bg-emerald-950/20">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-medium text-emerald-300">CRO</span>
+                <span className="text-xs font-semibold text-white">Comparison Landing Page</span>
+              </div>
+              <p className="text-[10px] text-zinc-500">minerva.io/vs/crustdata</p>
+            </div>
+            <div className="p-4 space-y-2">
+              <p className="text-xs text-zinc-300 font-medium">&quot;Minerva vs CrustData: The Full Comparison&quot;</p>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">Conversion-optimized page with 5 CTAs, logo bar, quick comparison table, where each provider wins, customer proof, FAQ. Honest about where CrustData is better (company signals, web search API).</p>
+              <button
+                onClick={() => onOpenFile("/files/phase-3b-content/landing-page-vs-crustdata.md", "Landing Page — vs CrustData")}
+                className="flex items-center gap-1.5 text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors mt-1"
+              >
+                <Eye size={10} /> Read full page
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          {/* LinkedIn Posts */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <LinkedinIcon size={12} className="text-blue-400" />
+              <span className="text-xs font-semibold text-white">LinkedIn Posts (3x)</span>
+            </div>
+            <div className="space-y-1.5 text-[11px] text-zinc-400">
+              <p>1. Data depth angle — 99.47% fill rate</p>
+              <p>2. Stack consolidation — 2,168 fields, one call</p>
+              <p>3. Bake-off challenge — send your file</p>
+            </div>
+            <button
+              onClick={() => onOpenFile("/files/phase-3b-content/linkedin-posts-crustdata.md", "LinkedIn Posts — CrustData")}
+              className="flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 transition-colors mt-3"
+            >
+              <Eye size={10} /> Read all 3 posts
+            </button>
+          </div>
+
+          {/* Lead Magnet / Bake-Off Kit */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Download size={12} className="text-amber-400" />
+              <span className="text-xs font-semibold text-white">Bake-Off Kit</span>
+            </div>
+            <p className="text-[11px] text-zinc-400 mb-1">The conversion mechanism: evaluation guide + scoring spreadsheet + free API credits.</p>
+            <p className="text-[10px] text-zinc-500">Weighted so Minerva&apos;s strengths carry the most points while staying credible.</p>
+            <button
+              onClick={() => onOpenFile("/files/phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md", "Bake-Off Evaluation Guide")}
+              className="flex items-center gap-1.5 text-[11px] text-amber-400 hover:text-amber-300 transition-colors mt-3"
+            >
+              <Eye size={10} /> Read evaluation guide
+            </button>
+          </div>
+
+          {/* Case Study */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen size={12} className="text-purple-400" />
+              <span className="text-xs font-semibold text-white">Case Study: Juicebox</span>
+            </div>
+            <p className="text-[11px] text-zinc-400 mb-1">Replaced 3 vendors with one Minerva API call. Match rate: 52% → 74%. Pipeline maintenance: 40hrs → 5hrs/month.</p>
+            <p className="text-[10px] text-amber-400/70">⚠ Illustrative — needs Juicebox validation</p>
+            <button
+              onClick={() => onOpenFile("/files/phase-3b-content/case-study-juicebox.md", "Case Study — Juicebox")}
+              className="flex items-center gap-1.5 text-[11px] text-purple-400 hover:text-purple-300 transition-colors mt-3"
+            >
+              <Eye size={10} /> Read case study
+            </button>
+          </div>
+        </div>
+
+        {/* Convergence callout */}
+        <div className="mt-4 rounded-xl border border-dashed border-zinc-700 bg-zinc-900/30 p-4">
+          <div className="flex items-center gap-3">
+            <ArrowDown size={14} className="text-zinc-500" />
+            <p className="text-[11px] text-zinc-400"><span className="text-white font-medium">Both tracks converge at the demo.</span> Outbound drives the meeting. Inbound catches the research phase. The bake-off kit is the bridge — every CTA across blog, landing page, and email sequences points to it.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Related files */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
         <p className="text-xs font-medium text-zinc-500 mb-3">RELATED FILES</p>
@@ -727,6 +841,8 @@ daniel`}</pre>
             { name: "Tier 1 Personalization Guide (12 targets)", path: "/files/phase-4a-sequences/tier1-personalization-guide.md" },
             { name: "1-to-1 Personalization Examples (all tiers)", path: "/files/phase-4a-sequences/1-to-1-personalization-examples.md" },
             { name: "Inbound Nurture (7 emails)", path: "/files/phase-4b-nurture/inbound-nurture-sequence.md" },
+            { name: "Keyword Research + Editorial Calendar", path: "/files/phase-3b-content/keyword-research-crustdata.md" },
+            { name: "Lead Magnet Concepts (evaluated)", path: "/files/phase-3b-content/lead-magnet-concepts-crustdata.md" },
             { name: "Outbound Voice Skill", path: "/files/skills/outbound-voice.md" },
             { name: "Tiered Personalization Skill", path: "/files/skills/tiered-personalization.md" },
           ].map((f) => (
