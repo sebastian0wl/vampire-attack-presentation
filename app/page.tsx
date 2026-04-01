@@ -1,26 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { phases, skillsUsed, newSkillsCreated, keyLearnings, sequenceFlow, systemImprovements, stats } from "@/lib/data";
+import { phases, skillsUsed, newSkillsCreated, keyLearnings, sequenceFlow, systemImprovements, stats, allFiles } from "@/lib/data";
+import type { Artifact } from "@/lib/data";
+import FileViewer from "@/components/FileViewer";
 import {
   ChevronDown, ChevronRight, FileText, Zap, Shield, Users,
-  ArrowRight, CheckCircle2, AlertTriangle, BookOpen, Mail,
+  ArrowRight, ArrowDown, CheckCircle2, AlertTriangle, BookOpen, Mail,
   Link as LinkedinIcon, Clock, Target, Layers, GitBranch, Brain, Wrench,
-  BarChart3, Lightbulb, ExternalLink, X
+  BarChart3, Lightbulb, X, Download, FolderOpen, Eye
 } from "lucide-react";
 
-type Tab = "overview" | "pipeline" | "sequences" | "skills" | "learnings" | "future";
+type Tab = "overview" | "pipeline" | "files" | "sequences" | "skills" | "learnings" | "future";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
-  const [expandedArtifact, setExpandedArtifact] = useState<string | null>(null);
   const [expandedSkill, setExpandedSkill] = useState<string | null>(null);
   const [showSequenceDetail, setShowSequenceDetail] = useState<number | null>(null);
+  // File viewer state
+  const [viewerFile, setViewerFile] = useState<{ path: string; name: string } | null>(null);
+
+  const openFile = (publicPath: string, name: string) => {
+    if (publicPath) setViewerFile({ path: publicPath, name });
+  };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "overview", label: "Overview", icon: <Layers size={16} /> },
     { id: "pipeline", label: "Pipeline", icon: <GitBranch size={16} /> },
+    { id: "files", label: "All Files", icon: <FolderOpen size={16} /> },
     { id: "sequences", label: "Sequences", icon: <Mail size={16} /> },
     { id: "skills", label: "Skills", icon: <Brain size={16} /> },
     { id: "learnings", label: "Learnings", icon: <Lightbulb size={16} /> },
@@ -29,6 +37,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      {/* File Viewer Drawer */}
+      {viewerFile && (
+        <FileViewer
+          filePath={viewerFile.path}
+          fileName={viewerFile.name}
+          onClose={() => setViewerFile(null)}
+        />
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-4">
@@ -45,13 +62,12 @@ export default function Home() {
               <span>April 2026</span>
             </div>
           </div>
-          {/* Tabs */}
-          <nav className="mt-4 flex gap-1">
+          <nav className="mt-4 flex gap-1 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all ${
+                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? "bg-zinc-800 text-white"
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -66,32 +82,25 @@ export default function Home() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {activeTab === "overview" && <OverviewTab />}
+        {activeTab === "overview" && <OverviewTab onOpenFile={openFile} />}
         {activeTab === "pipeline" && (
           <PipelineTab
             expandedPhase={expandedPhase}
             setExpandedPhase={setExpandedPhase}
-            expandedArtifact={expandedArtifact}
-            setExpandedArtifact={setExpandedArtifact}
+            onOpenFile={openFile}
           />
         )}
+        {activeTab === "files" && <AllFilesTab onOpenFile={openFile} />}
         {activeTab === "sequences" && (
-          <SequencesTab
-            showDetail={showSequenceDetail}
-            setShowDetail={setShowSequenceDetail}
-          />
+          <SequencesTab showDetail={showSequenceDetail} setShowDetail={setShowSequenceDetail} onOpenFile={openFile} />
         )}
         {activeTab === "skills" && (
-          <SkillsTab
-            expandedSkill={expandedSkill}
-            setExpandedSkill={setExpandedSkill}
-          />
+          <SkillsTab expandedSkill={expandedSkill} setExpandedSkill={setExpandedSkill} onOpenFile={openFile} />
         )}
         {activeTab === "learnings" && <LearningsTab />}
         {activeTab === "future" && <FutureTab />}
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-zinc-800 py-6 text-center text-xs text-zinc-600">
         Designed by Justin Liao for Minerva BI — Engine is reusable: swap the brand files and run it for any company
       </footer>
@@ -99,8 +108,218 @@ export default function Home() {
   );
 }
 
+/* ============ ARTIFACT BUTTON COMPONENT ============ */
+function ArtifactButton({ artifact, onOpenFile }: { artifact: Artifact; onOpenFile: (path: string, name: string) => void }) {
+  const hasFile = artifact.publicPath && artifact.publicPath.length > 0;
+  return (
+    <button
+      onClick={() => hasFile && onOpenFile(artifact.publicPath, artifact.name)}
+      disabled={!hasFile}
+      className={`flex items-center gap-3 rounded-lg border border-zinc-700 p-3 text-left transition-all w-full ${
+        hasFile ? "bg-zinc-800/50 hover:bg-zinc-700/50 hover:border-zinc-600 cursor-pointer" : "bg-zinc-800/20 opacity-60 cursor-default"
+      }`}
+    >
+      <FileText size={14} className="text-blue-400 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <span className="text-xs text-zinc-200 block">{artifact.name}</span>
+        {artifact.preview && <span className="text-[10px] text-zinc-500 block truncate mt-0.5">{artifact.preview}</span>}
+      </div>
+      <span className="text-[10px] text-zinc-600 font-mono shrink-0">{artifact.format}</span>
+      {hasFile && <Eye size={12} className="text-zinc-500 shrink-0" />}
+    </button>
+  );
+}
+
+/* ============ VISUAL PIPELINE FLOWCHART ============ */
+function PipelineFlowchart({ onOpenFile }: { onOpenFile: (path: string, name: string) => void }) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const PhaseBlock = ({ id, name, subtitle, skills, outputs, color, artifacts }: {
+    id: string; name: string; subtitle: string; skills?: string; outputs: string; color: string; artifacts?: Artifact[];
+  }) => {
+    const isExpanded = expanded === id;
+    return (
+      <div className="flex flex-col items-center">
+        <button
+          onClick={() => setExpanded(isExpanded ? null : id)}
+          className="w-full max-w-md rounded-xl border-2 px-5 py-4 text-center transition-all hover:scale-[1.02]"
+          style={{ borderColor: color, backgroundColor: color + "15" }}
+        >
+          <p className="text-sm font-bold text-white">{name}</p>
+          <p className="text-[11px] mt-1" style={{ color: color + "cc" }}>{subtitle}</p>
+          {skills && <p className="text-[10px] text-zinc-500 mt-1">Skills: {skills}</p>}
+          <p className="text-[10px] text-zinc-400 mt-1">Outputs: {outputs}</p>
+        </button>
+        {isExpanded && artifacts && artifacts.length > 0 && (
+          <div className="mt-2 w-full max-w-md space-y-1.5 animate-fade-in">
+            {artifacts.map((a) => (
+              <ArtifactButton key={a.name} artifact={a} onOpenFile={onOpenFile} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const GateBlock = ({ label }: { label: string }) => (
+    <div className="flex justify-center py-1">
+      <div className="rounded-full border-2 border-dashed border-amber-500/40 bg-amber-500/5 px-5 py-2">
+        <p className="text-[11px] text-amber-400 font-medium">{label}</p>
+      </div>
+    </div>
+  );
+
+  const Connector = () => (
+    <div className="flex justify-center py-1">
+      <div className="flex flex-col items-center">
+        <div className="w-0.5 h-4 bg-zinc-700" />
+        <ArrowDown size={14} className="text-zinc-600 -mt-1" />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-1">
+      {/* Phase 0 */}
+      <PhaseBlock
+        id="p0" name="Phase 0: Foundation setup" color="#6b7280"
+        subtitle="Brand memory, competitor list, exclusion lists, tool access"
+        outputs="5 brand files, exclusion CSV"
+        artifacts={phases[0].artifacts}
+      />
+      <Connector />
+      <GateBlock label="GATE 1: Confirm competitor target" />
+      <Connector />
+
+      {/* Phase 1 */}
+      <PhaseBlock
+        id="p1" name="Phase 1: Competitor deep research" color="#3b82f6"
+        subtitle="Website audit, G2 review mining, social scrape, logo extraction"
+        skills="research-agent, positioning-angles"
+        outputs="Research brief, logo list, positioning map"
+        artifacts={phases[1].artifacts}
+      />
+      <Connector />
+      <GateBlock label="GATE 2: Review research, confirm angles" />
+      <Connector />
+
+      {/* Phase 2 */}
+      <PhaseBlock
+        id="p2" name="Phase 2: Positioning + battlecard" color="#8b5cf6"
+        subtitle="Side-by-side comparison, objection handling, proof points"
+        skills="positioning-angles, direct-response-copy, humanize-ai"
+        outputs="Battlecard, one-pager, positioning angles"
+        artifacts={phases[2].artifacts}
+      />
+      <Connector />
+      <GateBlock label="GATE 3: Approve messaging + battlecard" />
+      <Connector />
+
+      {/* Parallel: Phase 3A + 3B */}
+      <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <PhaseBlock
+          id="p3a" name="Phase 3A: Target lists" color="#f59e0b"
+          subtitle="Vibe Prospecting MCP\nLists A, B, C + enrichment"
+          outputs="3 CSVs, 393 prospects"
+          artifacts={[phases[3].artifacts[0]]}
+        />
+        <PhaseBlock
+          id="p3b" name="Phase 3B: Inbound content" color="#22c55e"
+          subtitle="SEO comparison post, landing page\nLead magnet, LinkedIn posts"
+          skills="seo-content, direct-response-copy, content-atomizer"
+          outputs="Blog, landing page, social posts, bake-off kit"
+          artifacts={phases[3].artifacts.slice(1)}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <div className="flex justify-center py-1">
+          <div className="rounded-full border-2 border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-1.5">
+            <p className="text-[10px] text-amber-400">GATE 4A: Review target lists</p>
+          </div>
+        </div>
+        <div className="flex justify-center py-1">
+          <div className="rounded-full border-2 border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-1.5">
+            <p className="text-[10px] text-amber-400">GATE 4B: Review content</p>
+          </div>
+        </div>
+      </div>
+      <Connector />
+
+      {/* Parallel: Phase 4A + 4B */}
+      <div className="relative">
+        <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
+          <PhaseBlock
+            id="p4a" name="Phase 4A: SDR sequences" color="#f59e0b"
+            subtitle="4 emails × 3 tiers + LinkedIn track\nLaGrowthMachine ready"
+            skills="direct-response-copy, humanize-ai"
+            outputs="Outbound sequences"
+            artifacts={[phases[4].artifacts[0]]}
+          />
+          <PhaseBlock
+            id="p4b" name="Phase 4B: Nurture sequences" color="#22c55e"
+            subtitle="Lead magnet → demo path\n7-email nurture drip"
+            skills="email-sequences, humanize-ai"
+            outputs="7-email nurture"
+            artifacts={[phases[4].artifacts[1]]}
+          />
+        </div>
+        {/* Repeat loop indicator */}
+        <div className="absolute -right-12 top-0 bottom-0 hidden lg:flex flex-col items-center justify-center">
+          <div className="border-r-2 border-dashed border-zinc-700 h-full" />
+          <p className="text-[9px] text-zinc-600 writing-mode-vertical absolute -right-6 top-1/2 -translate-y-1/2 rotate-90 whitespace-nowrap">Repeat for next competitor</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <div className="flex justify-center py-1">
+          <div className="rounded-full border-2 border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-1.5">
+            <p className="text-[10px] text-amber-400">GATE 5A: Approve outreach copy</p>
+          </div>
+        </div>
+        <div className="flex justify-center py-1">
+          <div className="rounded-full border-2 border-dashed border-amber-500/40 bg-amber-500/5 px-4 py-1.5">
+            <p className="text-[10px] text-amber-400">GATE 5B: Approve nurture copy</p>
+          </div>
+        </div>
+      </div>
+      <Connector />
+
+      {/* Phase 5 */}
+      <PhaseBlock
+        id="p5" name="Phase 5: Sales enablement package" color="#06b6d4"
+        subtitle="Discovery script, demo talking points, follow-up templates\nLinkedIn posts (3x) + Twitter variants via content-atomizer"
+        skills="stakeholder-message-crafter, direct-response-copy"
+        outputs="Discovery script, demo guide, follow-up templates"
+        artifacts={phases[5].artifacts}
+      />
+      <Connector />
+      <GateBlock label="GATE 6: Full campaign review before launch" />
+      <Connector />
+
+      {/* Phase 6 */}
+      <PhaseBlock
+        id="p6" name="Phase 6: Campaign hypothesis + launch" color="#ef4444"
+        subtitle="Hypothesis card, tracking spreadsheet, LaGrowthMachine setup\nBDR executes sequences, content goes live"
+        outputs="Launch config, tracking template"
+        artifacts={phases[6].artifacts}
+      />
+      <Connector />
+      <GateBlock label="GATE 7: Day 7 checkpoint — kill/scale" />
+      <Connector />
+
+      {/* Phase 7 */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-md rounded-xl border-2 px-5 py-4 text-center" style={{ borderColor: "#22c55e", backgroundColor: "#22c55e15" }}>
+          <p className="text-sm font-bold text-white">Phase 7: Measure, iterate, repeat</p>
+          <p className="text-[11px] mt-1 text-green-400/80">Analyze reply/demo rates, refine sequences, scale winners</p>
+          <p className="text-[10px] text-zinc-500 mt-1">Then: loop back to Phase 0 with next competitor</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============== OVERVIEW TAB ============== */
-function OverviewTab() {
+function OverviewTab({ onOpenFile }: { onOpenFile: (path: string, name: string) => void }) {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Hero */}
@@ -116,6 +335,12 @@ function OverviewTab() {
           <p className="mt-3 text-zinc-400 leading-relaxed max-w-2xl">
             Every competitor&apos;s customer list, review page, SEO footprint, and social proof becomes an acquisition channel. The system is config-driven: swap the brand files and run it for any company.
           </p>
+          <button
+            onClick={() => onOpenFile("/files/system/system-architecture-overview.md", "System Architecture Overview")}
+            className="mt-4 flex items-center gap-2 rounded-lg bg-blue-500/10 border border-blue-500/20 px-4 py-2 text-xs text-blue-400 hover:bg-blue-500/20 transition-colors"
+          >
+            <Eye size={14} /> View full architecture document
+          </button>
         </div>
       </section>
 
@@ -141,121 +366,46 @@ function OverviewTab() {
         ))}
       </div>
 
-      {/* Architecture Diagram */}
+      {/* Architecture */}
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
-        <h3 className="text-lg font-semibold text-white mb-6">System Architecture</h3>
+        <h3 className="text-lg font-semibold text-white mb-2">Three-Layer Separation</h3>
+        <p className="text-xs text-zinc-500 mb-6">The system separates engine, config, and output. Swap the brand layer to fork for any company.</p>
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Layer 1: System */}
           <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-6 w-6 rounded bg-blue-500/20 flex items-center justify-center">
-                <Zap size={14} className="text-blue-400" />
-              </div>
+              <div className="h-6 w-6 rounded bg-blue-500/20 flex items-center justify-center"><Zap size={14} className="text-blue-400" /></div>
               <span className="text-sm font-medium text-blue-400">System (Engine)</span>
             </div>
             <p className="text-xs text-zinc-400 mb-3">Changes when you improve the process</p>
             <ul className="space-y-1.5 text-xs text-zinc-300">
-              <li>• Master prompt</li>
-              <li>• Project plan + gates</li>
-              <li>• Phase pipeline</li>
-              <li>• Dashboard UI</li>
-              <li>• Templates</li>
+              <li>• Master prompt + project plan</li>
+              <li>• Phase pipeline + gates</li>
+              <li>• Dashboard + templates</li>
             </ul>
           </div>
-          {/* Layer 2: Brand */}
           <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-6 w-6 rounded bg-purple-500/20 flex items-center justify-center">
-                <Users size={14} className="text-purple-400" />
-              </div>
+              <div className="h-6 w-6 rounded bg-purple-500/20 flex items-center justify-center"><Users size={14} className="text-purple-400" /></div>
               <span className="text-sm font-medium text-purple-400">Brand (Config)</span>
             </div>
             <p className="text-xs text-zinc-400 mb-3">Changes when you fork for a new company</p>
             <ul className="space-y-1.5 text-xs text-zinc-300">
-              <li>• Positioning</li>
-              <li>• Audience definitions</li>
+              <li>• Positioning + audience</li>
               <li>• Competitor profiles</li>
               <li>• Voice profile</li>
-              <li>• Differentiation data</li>
             </ul>
           </div>
-          {/* Layer 3: Campaigns */}
           <div className="rounded-xl border border-zinc-700 bg-zinc-800/50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-6 w-6 rounded bg-green-500/20 flex items-center justify-center">
-                <Target size={14} className="text-green-400" />
-              </div>
+              <div className="h-6 w-6 rounded bg-green-500/20 flex items-center justify-center"><Target size={14} className="text-green-400" /></div>
               <span className="text-sm font-medium text-green-400">Campaigns (Output)</span>
             </div>
             <p className="text-xs text-zinc-400 mb-3">Changes when you attack a new competitor</p>
             <ul className="space-y-1.5 text-xs text-zinc-300">
-              <li>• Research findings</li>
-              <li>• Attack angles + copy</li>
-              <li>• Prospect lists</li>
-              <li>• Sequences + nurture</li>
+              <li>• Research + angles + copy</li>
+              <li>• Prospect lists + sequences</li>
               <li>• Sales enablement</li>
             </ul>
-          </div>
-        </div>
-
-        {/* Skill Chain */}
-        <div className="mt-8 rounded-xl border border-zinc-700 bg-zinc-800/30 p-5">
-          <p className="text-sm font-medium text-zinc-300 mb-4">Skill Chain by Phase</p>
-          <div className="space-y-2 font-mono text-xs">
-            {[
-              { phase: "Phase 1", chain: "research-agent → positioning-angles" },
-              { phase: "Phase 2", chain: "positioning-angles → direct-response-copy → humanize-ai" },
-              { phase: "Phase 3B", chain: "seo-content → direct-response-copy → content-atomizer → humanize-ai" },
-              { phase: "Phase 3C", chain: "lead-magnet → direct-response-copy → humanize-ai" },
-              { phase: "Phase 4A", chain: "direct-response-copy → humanize-ai" },
-              { phase: "Phase 4B", chain: "email-sequences → humanize-ai" },
-              { phase: "Phase 5", chain: "stakeholder-message-crafter → direct-response-copy → content-atomizer" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="text-zinc-500 w-20 shrink-0">{item.phase}</span>
-                <span className="text-zinc-300">{item.chain}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Dual Track */}
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
-        <h3 className="text-lg font-semibold text-white mb-6">Dual-Track Approach</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Mail size={16} className="text-amber-400" />
-              <span className="text-sm font-medium text-amber-400">Outbound Track (Push)</span>
-            </div>
-            <ul className="space-y-2 text-xs text-zinc-300">
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-amber-400 shrink-0" /> Phase 3A: Build 3 prospect lists</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-amber-400 shrink-0" /> Phase 4A: Write multi-channel sequences</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-amber-400 shrink-0" /> LaGrowthMachine: LinkedIn + Email, 6 touches over 14 days</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-amber-400 shrink-0" /> Soft CTAs drive to lead magnet (cross-track)</li>
-            </ul>
-          </div>
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen size={16} className="text-cyan-400" />
-              <span className="text-sm font-medium text-cyan-400">Inbound Track (Pull)</span>
-            </div>
-            <ul className="space-y-2 text-xs text-zinc-300">
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-cyan-400 shrink-0" /> Phase 3B: SEO blog, landing page, social posts</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-cyan-400 shrink-0" /> Phase 3C: Bake-off kit lead magnet</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-cyan-400 shrink-0" /> Phase 4B: 7-email nurture drip</li>
-              <li className="flex items-start gap-2"><ArrowRight size={12} className="mt-0.5 text-cyan-400 shrink-0" /> Captures demand from outbound soft CTAs</li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-zinc-800 px-4 py-2 text-xs text-zinc-300">
-            <span className="text-amber-400">Outbound</span>
-            <ArrowRight size={12} className="text-zinc-500" />
-            <span className="text-zinc-400">Convergence: Demo Booked</span>
-            <ArrowRight size={12} className="text-zinc-500" />
-            <span className="text-cyan-400">Inbound</span>
           </div>
         </div>
       </section>
@@ -267,7 +417,7 @@ function OverviewTab() {
           <div>
             <p className="text-sm font-medium text-zinc-300">Built during a hackathon sprint</p>
             <p className="mt-1 text-xs text-zinc-500 leading-relaxed">
-              This system was built under time constraints. The CrustData campaign is complete (all 7 phases, 26+ artifacts). The Windfall campaign is queued but not started. Future improvements include: LLM-generated 1-to-1 personalization for all tiers, automated claims registry propagation, live verification crawls as Phase 1 Step 1, and A/B testing the segment-level templates vs. personalized copy. The engine is production-ready — the expansion loops and additional competitor campaigns are the next sprint.
+              The CrustData campaign is complete (all 7 phases, 26+ artifacts). Future improvements include LLM-generated 1-to-1 personalization, automated claims registry, and A/B testing segment templates vs. personalized copy. The engine is production-ready for additional competitor campaigns.
             </p>
           </div>
         </div>
@@ -280,157 +430,74 @@ function OverviewTab() {
 function PipelineTab({
   expandedPhase,
   setExpandedPhase,
-  expandedArtifact,
-  setExpandedArtifact,
+  onOpenFile,
 }: {
   expandedPhase: number | null;
   setExpandedPhase: (id: number | null) => void;
-  expandedArtifact: string | null;
-  setExpandedArtifact: (name: string | null) => void;
+  onOpenFile: (path: string, name: string) => void;
 }) {
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="mb-6">
+    <div className="space-y-8 animate-fade-in">
+      <div>
         <h2 className="text-2xl font-bold text-white">7-Phase Pipeline</h2>
-        <p className="mt-1 text-sm text-zinc-400">Click any phase to expand. Click artifacts to preview content.</p>
+        <p className="mt-1 text-sm text-zinc-400">Click any phase to see its artifacts. Click an artifact to read the full document.</p>
       </div>
 
-      {/* Dependency Graph */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-6 mb-6">
-        <p className="text-xs text-zinc-500 mb-4 font-medium">DEPENDENCY GRAPH</p>
-        <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-          {phases.map((phase, i) => (
-            <div key={phase.id} className="flex items-center gap-2">
-              <button
-                onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
-                className="rounded-lg px-3 py-1.5 border transition-all hover:scale-105"
-                style={{
-                  borderColor: phase.color + "40",
-                  backgroundColor: phase.color + "10",
-                  color: phase.color,
-                }}
-              >
-                P{phase.id}
-              </button>
-              {i < phases.length - 1 && (
-                <ArrowRight size={12} className="text-zinc-600" />
-              )}
-              {(phase.id === 2 || phase.id === 4) && (
-                <span className="rounded bg-zinc-800 px-2 py-0.5 text-zinc-500 text-[10px]">GATE</span>
-              )}
+      {/* Visual Flowchart */}
+      <PipelineFlowchart onOpenFile={onOpenFile} />
+
+      {/* Skill Chain */}
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-6 mt-8">
+        <p className="text-sm font-medium text-zinc-300 mb-4">Skill Chain by Phase</p>
+        <div className="space-y-2 font-mono text-xs">
+          {[
+            { phase: "Phase 1", chain: "research-agent → positioning-angles" },
+            { phase: "Phase 2", chain: "positioning-angles → direct-response-copy → humanize-ai" },
+            { phase: "Phase 3B", chain: "seo-content → direct-response-copy → content-atomizer → humanize-ai" },
+            { phase: "Phase 3C", chain: "lead-magnet → direct-response-copy → humanize-ai" },
+            { phase: "Phase 4A", chain: "direct-response-copy → humanize-ai" },
+            { phase: "Phase 4B", chain: "email-sequences → humanize-ai" },
+            { phase: "Phase 5", chain: "stakeholder-message-crafter → direct-response-copy → content-atomizer" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-zinc-500 w-20 shrink-0">{item.phase}</span>
+              <span className="text-zinc-300">{item.chain}</span>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-[10px] text-zinc-600">Phases 3A+3B+3C run in parallel. Phases 4A+4B run in parallel. All others sequential.</p>
+      </div>
+    </div>
+  );
+}
+
+/* ============== ALL FILES TAB ============== */
+function AllFilesTab({ onOpenFile }: { onOpenFile: (path: string, name: string) => void }) {
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div>
+        <h2 className="text-2xl font-bold text-white">All Files ({allFiles.reduce((acc, c) => acc + c.files.length, 0)})</h2>
+        <p className="mt-1 text-sm text-zinc-400">Click any file to read its full content. Download button available in the viewer.</p>
       </div>
 
-      {/* Phase Cards */}
-      {phases.map((phase) => (
-        <div
-          key={phase.id}
-          className="rounded-xl border border-zinc-800 bg-zinc-900/50 overflow-hidden transition-all"
-        >
-          {/* Phase Header */}
-          <button
-            onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
-            className="w-full flex items-center gap-4 p-5 text-left hover:bg-zinc-800/30 transition-colors"
-          >
-            <div
-              className="h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
-              style={{ backgroundColor: phase.color + "20", color: phase.color }}
-            >
-              {phase.id}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                <h3 className="text-sm font-semibold text-white">{phase.name}</h3>
-                <span className="text-[10px] text-zinc-500 bg-zinc-800 rounded px-2 py-0.5">{phase.time}</span>
-                <CheckCircle2 size={14} className="text-green-500" />
-              </div>
-              <p className="mt-0.5 text-xs text-zinc-400 truncate">{phase.description}</p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <span className="text-[10px] text-zinc-500">{phase.artifacts.length} artifacts</span>
-              {phase.skills.length > 0 && (
-                <span className="text-[10px] text-zinc-500">{phase.skills.length} skills</span>
-              )}
-              {phase.gates.length > 0 && (
-                <span className="text-[10px] text-amber-400">{phase.gates.length} gate{phase.gates.length > 1 ? "s" : ""}</span>
-              )}
-              {expandedPhase === phase.id ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
-            </div>
-          </button>
-
-          {/* Expanded Content */}
-          {expandedPhase === phase.id && (
-            <div className="border-t border-zinc-800 p-5 space-y-5 animate-fade-in">
-              {/* Details */}
-              <div className="rounded-lg bg-zinc-800/30 p-4">
-                <p className="text-xs text-zinc-400 whitespace-pre-line leading-relaxed">{phase.details}</p>
-              </div>
-
-              {/* Skills */}
-              {phase.skills.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-zinc-500 mb-2">SKILLS USED</p>
-                  <div className="grid md:grid-cols-2 gap-2">
-                    {phase.skills.map((skill) => (
-                      <div key={skill.name} className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-3">
-                        <div className="flex items-center gap-2">
-                          <Brain size={12} className="text-purple-400" />
-                          <span className="text-xs font-medium text-purple-300 font-mono">{skill.name}</span>
-                        </div>
-                        <p className="mt-1 text-[11px] text-zinc-400">{skill.purpose}</p>
-                      </div>
-                    ))}
-                  </div>
+      {allFiles.map((category) => (
+        <div key={category.category}>
+          <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">{category.category}</h3>
+          <div className="space-y-1.5">
+            {category.files.map((file) => (
+              <button
+                key={file.path}
+                onClick={() => onOpenFile(file.publicPath, file.name)}
+                className="w-full flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-left hover:bg-zinc-800/50 hover:border-zinc-700 transition-all group"
+              >
+                <FileText size={16} className="text-blue-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm text-zinc-200 group-hover:text-white transition-colors">{file.name}</span>
+                  <span className="text-[10px] text-zinc-600 font-mono block mt-0.5">{file.path}</span>
                 </div>
-              )}
-
-              {/* Artifacts */}
-              <div>
-                <p className="text-xs font-medium text-zinc-500 mb-2">ARTIFACTS</p>
-                <div className="space-y-2">
-                  {phase.artifacts.map((artifact) => (
-                    <div key={artifact.name}>
-                      <button
-                        onClick={() => setExpandedArtifact(expandedArtifact === artifact.name ? null : artifact.name)}
-                        className="w-full flex items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-800/50 p-3 hover:bg-zinc-700/50 transition-colors text-left"
-                      >
-                        <FileText size={14} className="text-zinc-400 shrink-0" />
-                        <span className="text-xs text-zinc-200 flex-1">{artifact.name}</span>
-                        <span className="text-[10px] text-zinc-600 font-mono">{artifact.format}</span>
-                        <span className="text-[10px] text-zinc-600 font-mono">{artifact.file}</span>
-                        {expandedArtifact === artifact.name ? <ChevronDown size={12} className="text-zinc-500" /> : <ChevronRight size={12} className="text-zinc-500" />}
-                      </button>
-                      {expandedArtifact === artifact.name && artifact.preview && (
-                        <div className="ml-8 mt-1 rounded-lg bg-zinc-800/80 border border-zinc-700/50 p-3 animate-fade-in">
-                          <p className="text-[11px] text-zinc-400 leading-relaxed">{artifact.preview}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Gates */}
-              {phase.gates.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-zinc-500 mb-2">HUMAN REVIEW GATES</p>
-                  {phase.gates.map((gate) => (
-                    <div key={gate.id} className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-                      <div className="flex items-center gap-2">
-                        <Shield size={12} className="text-amber-400" />
-                        <span className="text-xs font-medium text-amber-300">{gate.name}</span>
-                        <span className="text-[10px] text-zinc-500">Reviewed by: {gate.reviewedBy}</span>
-                      </div>
-                      <p className="mt-1 text-[11px] text-zinc-400">{gate.description}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                <Eye size={14} className="text-zinc-600 group-hover:text-zinc-400 transition-colors shrink-0" />
+              </button>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -441,15 +508,25 @@ function PipelineTab({
 function SequencesTab({
   showDetail,
   setShowDetail,
+  onOpenFile,
 }: {
   showDetail: number | null;
   setShowDetail: (idx: number | null) => void;
+  onOpenFile: (path: string, name: string) => void;
 }) {
   return (
     <div className="space-y-8 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold text-white">LaGrowthMachine Sequences</h2>
-        <p className="mt-1 text-sm text-zinc-400">Email + LinkedIn tracks running in parallel. Click any email to see the full copy.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white">LaGrowthMachine Sequences</h2>
+          <p className="mt-1 text-sm text-zinc-400">Click any email to see the full copy.</p>
+        </div>
+        <button
+          onClick={() => onOpenFile("/files/phase-4a-sequences/outbound-sequences-crustdata.md", "Outbound Sequences")}
+          className="flex items-center gap-2 rounded-lg bg-zinc-800 px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-700 transition-colors"
+        >
+          <Eye size={12} /> View full document
+        </button>
       </div>
 
       {/* Voice Rules */}
@@ -535,32 +612,35 @@ function SequencesTab({
         </div>
       </div>
 
-      {/* Tiers */}
-      <div>
-        <h3 className="text-sm font-semibold text-white mb-4">Tiered Personalization</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          {sequenceFlow.tiers.map((tier) => (
-            <div key={tier.tier} className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg font-bold text-white">Tier {tier.tier}</span>
-                <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400">{tier.count} prospects</span>
-              </div>
-              <p className="text-[11px] text-zinc-400">{tier.approach}</p>
+      {/* Tiers + More Files */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {sequenceFlow.tiers.map((tier) => (
+          <div key={tier.tier} className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg font-bold text-white">Tier {tier.tier}</span>
+              <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400">{tier.count} prospects</span>
             </div>
-          ))}
-        </div>
+            <p className="text-[11px] text-zinc-400">{tier.approach}</p>
+          </div>
+        ))}
       </div>
 
-      {/* LGM Config */}
+      {/* Related files */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
-        <p className="text-xs font-medium text-zinc-500 mb-3">LAGROWTHACHINE CONFIG</p>
-        <div className="grid md:grid-cols-2 gap-3 text-xs text-zinc-400">
-          <div>• Email + LinkedIn run in parallel from Day 0</div>
-          <div>• Daily limits: 30-50 LinkedIn connections/day</div>
-          <div>• Tier 1 launches Day 0, Tier 2 Day 3, Tier 3 Day 7</div>
-          <div>• Identity: Jackson Engles or Daniel Saedi</div>
-          <div>• Tier 3: Email only, no LinkedIn</div>
-          <div>• Tag every reply by segment (A-E) and tier (1-3)</div>
+        <p className="text-xs font-medium text-zinc-500 mb-3">RELATED FILES</p>
+        <div className="grid md:grid-cols-2 gap-2">
+          {[
+            { name: "Outbound Sequences (full)", path: "/files/phase-4a-sequences/outbound-sequences-crustdata.md" },
+            { name: "Inbound Nurture (7 emails)", path: "/files/phase-4b-nurture/inbound-nurture-sequence.md" },
+            { name: "Outbound Voice Skill", path: "/files/skills/outbound-voice.md" },
+            { name: "Tiered Personalization Skill", path: "/files/skills/tiered-personalization.md" },
+          ].map((f) => (
+            <button key={f.path} onClick={() => onOpenFile(f.path, f.name)} className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/50 p-2.5 hover:bg-zinc-700/50 transition-colors text-left">
+              <FileText size={12} className="text-blue-400" />
+              <span className="text-xs text-zinc-300">{f.name}</span>
+              <Eye size={10} className="text-zinc-600 ml-auto" />
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -571,22 +651,24 @@ function SequencesTab({
 function SkillsTab({
   expandedSkill,
   setExpandedSkill,
+  onOpenFile,
 }: {
   expandedSkill: string | null;
   setExpandedSkill: (name: string | null) => void;
+  onOpenFile: (path: string, name: string) => void;
 }) {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold text-white">Skills & Tools</h2>
-        <p className="mt-1 text-sm text-zinc-400">10 skills from the 47-skill library actively used, plus 5 new skills created during this build.</p>
+        <p className="mt-1 text-sm text-zinc-400">10 skills actively used + 5 new skills created. Click the eye icon on new skills to read the full skill file.</p>
       </div>
 
       {/* Context */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
         <p className="text-xs font-medium text-zinc-500 mb-3">HOW SKILLS WORK</p>
         <p className="text-xs text-zinc-400 leading-relaxed">
-          Skills are modular prompt components stored at <code className="text-zinc-300 bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-[10px]">~/Documents/.agents/skills/</code>. Each skill is a specialized capability — SEO content, direct-response copy, email sequences, humanize-AI, etc. The Claude agent chains skills together per phase. Brand voice and positioning context flow through all skills via the brand files.
+          Skills are modular prompt components stored at <code className="text-zinc-300 bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-[10px]">~/Documents/.agents/skills/</code>. Each skill is a specialized capability. The Claude agent chains skills together per phase. Brand voice and positioning context flow through all skills via the brand files.
         </p>
         <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
           Voice profiles were captured from <span className="text-zinc-300">Gong call transcripts</span> of Daniel Saedi and Jackson Engles. Their actual speech patterns, vocabulary, and pacing informed the outbound-voice skill and brand-voice configuration.
@@ -625,15 +707,24 @@ function SkillsTab({
         <div className="space-y-2">
           {newSkillsCreated.map((skill) => (
             <div key={skill.name} className="rounded-xl border border-green-500/20 bg-green-500/5 overflow-hidden">
-              <button
-                onClick={() => setExpandedSkill(expandedSkill === skill.name ? null : skill.name)}
-                className="w-full flex items-center gap-3 p-4 text-left hover:bg-green-500/10 transition-colors"
-              >
+              <div className="flex items-center gap-3 p-4">
                 <Wrench size={14} className="text-green-400 shrink-0" />
-                <span className="text-xs font-medium text-green-300 font-mono w-48 shrink-0">{skill.name}</span>
-                <span className="text-[11px] text-zinc-400 flex-1 truncate">{skill.purpose}</span>
-                {expandedSkill === skill.name ? <ChevronDown size={12} className="text-zinc-500" /> : <ChevronRight size={12} className="text-zinc-500" />}
-              </button>
+                <button
+                  onClick={() => setExpandedSkill(expandedSkill === skill.name ? null : skill.name)}
+                  className="flex-1 text-left flex items-center gap-3"
+                >
+                  <span className="text-xs font-medium text-green-300 font-mono w-48 shrink-0">{skill.name}</span>
+                  <span className="text-[11px] text-zinc-400 flex-1 truncate">{skill.purpose}</span>
+                  {expandedSkill === skill.name ? <ChevronDown size={12} className="text-zinc-500" /> : <ChevronRight size={12} className="text-zinc-500" />}
+                </button>
+                <button
+                  onClick={() => onOpenFile(skill.publicPath, skill.name)}
+                  className="rounded-lg bg-green-500/10 p-1.5 hover:bg-green-500/20 transition-colors shrink-0"
+                  title="View full skill file"
+                >
+                  <Eye size={14} className="text-green-400" />
+                </button>
+              </div>
               {expandedSkill === skill.name && (
                 <div className="border-t border-green-500/10 p-4 animate-fade-in">
                   <p className="text-xs text-zinc-400 leading-relaxed">{skill.detail}</p>
@@ -677,10 +768,8 @@ function LearningsTab() {
     <div className="space-y-8 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold text-white">Key Learnings & Corrections</h2>
-        <p className="mt-1 text-sm text-zinc-400">Documented during the CrustData campaign build. Each learning improved the system for future runs.</p>
+        <p className="mt-1 text-sm text-zinc-400">Documented during the CrustData campaign build.</p>
       </div>
-
-      {/* Critical Learnings */}
       <div>
         <h3 className="text-sm font-semibold text-amber-400 mb-4">Critical Corrections</h3>
         <div className="space-y-3">
@@ -697,8 +786,6 @@ function LearningsTab() {
           ))}
         </div>
       </div>
-
-      {/* Other Learnings */}
       <div>
         <h3 className="text-sm font-semibold text-zinc-300 mb-4">All Learnings</h3>
         <div className="space-y-2">
@@ -710,22 +797,20 @@ function LearningsTab() {
           ))}
         </div>
       </div>
-
-      {/* Gate Failures */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <h3 className="text-sm font-semibold text-white mb-4">Gate Failures That Led to System Improvements</h3>
+        <h3 className="text-sm font-semibold text-white mb-4">Gate Failures → System Improvements</h3>
         <div className="space-y-4">
           {[
-            { gate: "Source Verification", what: "CrustData HQ stated as Austin (was SF). Pricing stated without attribution.", fix: "Every factual claim must have a linked source URL. Unsourced claims tagged [UNVERIFIED]." },
-            { gate: "Customer Claims Consistency", what: "Correction applied to research brief but NOT propagated to battlecard, one-pager, blog.", fix: "Claims Registry + mandatory propagation sweep after any correction." },
-            { gate: "Awareness-Stage Mapping", what: "Led with consumer data for B2B-aware audience. Had to rewrite all outbound angles.", fix: "Awareness-Stage Map required BEFORE positioning angles are written." },
-            { gate: "Commercial Terms Input", what: "Discussed pricing without knowing Minerva's actual terms.", fix: "Commercial Terms Interview added to Phase 0." },
-            { gate: "Live Website Verification", what: "Claims based on cached data, not current competitor website.", fix: "Live Website Crawl mandatory as Phase 1 Step 1." },
-          ].map((failure, i) => (
+            { gate: "Source Verification", what: "CrustData HQ stated as Austin (was SF). Pricing stated without attribution.", fix: "Every factual claim must have a linked source URL." },
+            { gate: "Claims Consistency", what: "Correction applied to research brief but NOT propagated to downstream files.", fix: "Claims Registry + mandatory propagation sweep." },
+            { gate: "Awareness-Stage Mapping", what: "Led with consumer data for B2B-aware audience.", fix: "Awareness-Stage Map required BEFORE positioning angles." },
+            { gate: "Commercial Terms", what: "Discussed pricing without knowing actual terms.", fix: "Commercial Terms Interview in Phase 0." },
+            { gate: "Live Verification", what: "Claims based on cached data, not current website.", fix: "Live Website Crawl as Phase 1 Step 1." },
+          ].map((f, i) => (
             <div key={i} className="rounded-lg bg-zinc-800/30 p-4">
-              <p className="text-xs font-medium text-red-400">{failure.gate}</p>
-              <p className="mt-1 text-[11px] text-zinc-500">What happened: {failure.what}</p>
-              <p className="mt-1 text-[11px] text-green-400">Fix: {failure.fix}</p>
+              <p className="text-xs font-medium text-red-400">{f.gate}</p>
+              <p className="mt-1 text-[11px] text-zinc-500">What happened: {f.what}</p>
+              <p className="mt-1 text-[11px] text-green-400">Fix: {f.fix}</p>
             </div>
           ))}
         </div>
@@ -740,7 +825,7 @@ function FutureTab() {
     <div className="space-y-8 animate-fade-in">
       <div>
         <h2 className="text-2xl font-bold text-white">Future Evolution</h2>
-        <p className="mt-1 text-sm text-zinc-400">System improvements identified during the build. Each makes the next campaign run faster and better.</p>
+        <p className="mt-1 text-sm text-zinc-400">System improvements identified during the build.</p>
       </div>
 
       {/* Expansion Loop */}
@@ -748,15 +833,13 @@ function FutureTab() {
         <h3 className="text-lg font-semibold text-white mb-6">The Expansion Loop</h3>
         <div className="space-y-4">
           {[
-            { wave: "Wave 1", label: "Competitor Followers (Seed)", size: "~1,200 → ~300 reachable", messaging: "Direct displacement ('us vs. them')", color: "#3b82f6", goal: "Validate which personas + angles convert" },
-            { wave: "Wave 2", label: "Person Search Expansion", size: "5,000-10,000 via Person Search API", messaging: "Category education + differentiation", color: "#8b5cf6", goal: "Scale what worked in Wave 1" },
-            { wave: "Wave 3", label: "Full TAM Build", size: "25,000+ records", messaging: "Problem → solution (no competitor mention)", color: "#22c55e", goal: "Own the category" },
+            { wave: "Wave 1", label: "Competitor Followers (Seed)", size: "~1,200 → ~300 reachable", messaging: "Direct displacement", color: "#3b82f6", goal: "Validate which personas + angles convert" },
+            { wave: "Wave 2", label: "Person Search Expansion", size: "5,000-10,000", messaging: "Category education + differentiation", color: "#8b5cf6", goal: "Scale what worked in Wave 1" },
+            { wave: "Wave 3", label: "Full TAM Build", size: "25,000+", messaging: "Problem → solution (no competitor mention)", color: "#22c55e", goal: "Own the category" },
           ].map((wave, i) => (
             <div key={i} className="flex items-start gap-4">
               <div className="flex flex-col items-center">
-                <div className="h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: wave.color + "20", color: wave.color }}>
-                  {i + 1}
-                </div>
+                <div className="h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: wave.color + "20", color: wave.color }}>{i + 1}</div>
                 {i < 2 && <div className="w-0.5 h-8 bg-zinc-700 mt-1" />}
               </div>
               <div className="flex-1 pb-4">
@@ -772,34 +855,27 @@ function FutureTab() {
         </div>
       </div>
 
-      {/* 1-to-1 Personalization */}
+      {/* 1-to-1 */}
       <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-8">
         <h3 className="text-lg font-semibold text-white mb-2">Minerva-Powered 1-to-1 Personalization</h3>
-        <p className="text-xs text-zinc-400 mb-6">The most powerful demo of Minerva&apos;s value: use our own enrichment data to write personalized outbound that gets higher response rates.</p>
-
+        <p className="text-xs text-zinc-400 mb-6">Use our own enrichment data to write personalized outbound.</p>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="rounded-lg bg-zinc-800/50 p-4">
             <p className="text-xs font-medium text-zinc-500 mb-2">CURRENT (Segment-Level)</p>
             <ul className="space-y-1.5 text-xs text-zinc-400">
               <li>5 email variants across 393 targets</li>
-              <li>Angle picked by segment</li>
               <li>Only Tier 1 gets manual personalization</li>
-              <li>Reply rates: ~8-12% industry average</li>
+              <li>Reply rates: ~8-12%</li>
             </ul>
           </div>
           <div className="rounded-lg bg-purple-500/10 border border-purple-500/20 p-4">
             <p className="text-xs font-medium text-purple-400 mb-2">FUTURE (1-to-1)</p>
             <ul className="space-y-1.5 text-xs text-zinc-300">
-              <li>393 unique emails</li>
-              <li>Angle picked by individual enrichment profile</li>
+              <li>393 unique emails from enrichment data</li>
               <li>Every tier gets Tier 1 quality</li>
               <li>Reply rates: 15-25%+ projected</li>
             </ul>
           </div>
-        </div>
-
-        <div className="mt-4 rounded-lg bg-zinc-800/30 p-3">
-          <p className="text-[11px] text-zinc-500">Implementation: ~10-15 hours. Enrichment pipeline already built. Needs: LLM prompt template, sending infrastructure (Instantly/Smartlead), review queue, A/B framework. Planned for Wave 2-3.</p>
         </div>
       </div>
 
@@ -824,12 +900,10 @@ function FutureTab() {
         <h3 className="text-sm font-semibold text-white mb-4">Next Competitor Campaigns (Queued)</h3>
         <div className="flex flex-wrap gap-2">
           {["Windfall", "Apollo", "ZoomInfo", "Clearbit", "Lusha"].map((name) => (
-            <span key={name} className="rounded-full border border-zinc-700 bg-zinc-800/50 px-3 py-1.5 text-xs text-zinc-400">
-              {name}
-            </span>
+            <span key={name} className="rounded-full border border-zinc-700 bg-zinc-800/50 px-3 py-1.5 text-xs text-zinc-400">{name}</span>
           ))}
         </div>
-        <p className="mt-3 text-[11px] text-zinc-500">Same personas apply across all data enrichment competitors. Each campaign: ~3 hours (brand files reused, templates cloned). The system compounds: each campaign adds content, leads, and learnings.</p>
+        <p className="mt-3 text-[11px] text-zinc-500">Same personas apply. Each campaign: ~3 hours. The system compounds.</p>
       </div>
     </div>
   );

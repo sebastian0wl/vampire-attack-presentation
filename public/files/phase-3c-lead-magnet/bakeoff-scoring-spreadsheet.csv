@@ -1,0 +1,10 @@
+Dimension,Weight (%),What to Measure,Provider A (Score 1-10),Provider B (Score 1-10),Provider A Weighted,Provider B Weighted,Notes
+Field depth per person,20,"Count unique fields returned per record. Check for consumer + professional categories. Look at field taxonomy and typing.",,,,,
+Match rate by identifier type,20,"Calculate match rate by segment: work email, personal email, phone, name+company. Note if provider rejects certain identifier types.",,,,,
+Data quality (fill rates),15,"For each record: populated fields / total fields. Break down by category. Flag stale data.",,,,,
+Data standardization,10,"Check for normalized job titles, enumerated values, consistent date/phone/address formats. Note free-text vs. typed fields.",,,,,
+Consumer data coverage,15,"Check for financial, property, vehicle, interest, household, political, charitable data. Count distinct consumer categories with 10+ populated fields.",,,,,
+Identity graph type,10,"Determine if graph is deterministic, probabilistic, or lookup. Test with outdated identifiers. Check for multi-identifier linking and confidence scores.",,,,,
+Pricing model,5,"Calculate effective cost per enriched record at expected volume. Check for annual minimums, overage pricing, failed lookup charges.",,,,,
+Compliance + trust signals,5,"Verify SOC 2, CCPA/GDPR compliance, named data sources, third-party audits, published DPA, opt-out mechanisms.",,,,,
+TOTAL,100,,,,,,

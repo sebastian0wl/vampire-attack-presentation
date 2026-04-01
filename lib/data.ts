@@ -21,6 +21,7 @@ export interface Skill {
 export interface Artifact {
   name: string;
   file: string;
+  publicPath: string;
   format: string;
   preview?: string;
 }
@@ -43,11 +44,11 @@ export const phases: Phase[] = [
     description: "Create brand files, exclusion lists, verify tool access. One-time setup that gets reused for every competitor campaign.",
     skills: [],
     artifacts: [
-      { name: "Positioning Doc", file: "brand/positioning.md", format: "MD", preview: "Core positioning, proof points, $20M raised, NBA/Experian/Clay partnerships. 270M+ identity graph, 2,168+ fields, 70-80% match rates." },
-      { name: "Audience Definitions", file: "brand/audience.md", format: "MD", preview: "3 ICP audiences: API Builders (AI/agent companies), GTM Teams (sales/marketing), Product Leaders (embedding data in products)." },
-      { name: "Competitor Profiles", file: "brand/competitors.md", format: "MD", preview: "Profiles for CrustData, Windfall, Apollo, ZoomInfo, Clearbit, Lusha. Attack angles and competitive positioning for each." },
-      { name: "Voice Profile", file: "brand/voice-profile.md", format: "MD", preview: "Daniel Saedi voice: casual, lowercase, technical peer-to-peer. Jackson Engles voice: blog/inbound, more polished but still direct." },
-      { name: "Differentiation Cheatsheet", file: "brand/differentiation-cheatsheet.md", format: "MD", preview: "Head-to-head comparison data across all competitors. Field counts, match rates, data categories, pricing, compliance status." },
+      { name: "Positioning Doc", file: "brand/positioning.md", publicPath: "/files/brand/positioning.md", format: "MD", preview: "Core positioning, proof points, $20M raised, NBA/Experian/Clay partnerships. 270M+ identity graph, 2,168+ fields, 70-80% match rates." },
+      { name: "Audience Definitions", file: "brand/audience.md", publicPath: "/files/brand/audience.md", format: "MD", preview: "3 ICP audiences: API Builders (AI/agent companies), GTM Teams (sales/marketing), Product Leaders (embedding data in products)." },
+      { name: "Competitor Profiles", file: "brand/competitors.md", publicPath: "/files/brand/competitors.md", format: "MD", preview: "Profiles for CrustData, Windfall, Apollo, ZoomInfo, Clearbit, Lusha. Attack angles and competitive positioning for each." },
+      { name: "Voice Profile", file: "brand/voice-profile.md", publicPath: "/files/brand/voice-profile.md", format: "MD", preview: "Daniel Saedi voice: casual, lowercase, technical peer-to-peer. Jackson Engles voice: blog/inbound, more polished but still direct." },
+      { name: "Differentiation Cheatsheet", file: "brand/differentiation-cheatsheet.md", publicPath: "/files/brand/differentiation-cheatsheet.md", format: "MD", preview: "Head-to-head comparison data across all competitors. Field counts, match rates, data categories, pricing, compliance status." },
     ],
     gates: [],
     details: `The foundation layer is config-driven. To fork this system for a different company, you replace these 5 brand files and run the pipeline. Everything downstream adapts automatically because each phase reads from brand files, not hardcoded values.
@@ -69,9 +70,9 @@ Commercial terms were captured upfront: usage-based pricing, no per-seat fees, n
       { name: "positioning-angles", purpose: "Generate ranked attack angles from research", description: "Takes research output and generates 3-5 distinct positioning angles. Each angle targets a specific audience segment with proof points and deployment recommendations." },
     ],
     artifacts: [
-      { name: "Research Brief", file: "campaigns/crustdata/phase-1-research/competitor-research-crustdata.md", format: "MD", preview: "232-line deep dive: CrustData has 90 person fields (professional only), $6M seed (YC F24), zero consumer attribute data, zero published fill rates, /security and /trust pages return 404. Company names in demos are example data, not customer endorsements." },
-      { name: "Customer Logo Analysis", file: "campaigns/crustdata/phase-1-research/competitor-logos-crustdata.md", format: "MD", preview: "Perplexity, Anthropic, etc. shown in CrustData product UI are example data, not confirmed customers. No formal case studies, no logo bar, no testimonials. Key nuance for competitive claims." },
-      { name: "Positioning Map", file: "campaigns/crustdata/phase-1-research/positioning-map-crustdata.md", format: "MD", preview: "Visual competitive landscape showing Minerva's unique position at B2B+B2C intersection. Maps data depth vs. data breadth across all enrichment competitors." },
+      { name: "Research Brief", file: "campaigns/crustdata/phase-1-research/competitor-research-crustdata.md", publicPath: "/files/phase-1-research/competitor-research-crustdata.md", format: "MD", preview: "232-line deep dive: CrustData has 90 person fields (professional only), $6M seed (YC F24), zero consumer attribute data, zero published fill rates, /security and /trust pages return 404. Company names in demos are example data, not customer endorsements." },
+      { name: "Customer Logo Analysis", file: "campaigns/crustdata/phase-1-research/competitor-logos-crustdata.md", publicPath: "/files/phase-1-research/competitor-logos-crustdata.md", format: "MD", preview: "Perplexity, Anthropic, etc. shown in CrustData product UI are example data, not confirmed customers. No formal case studies, no logo bar, no testimonials. Key nuance for competitive claims." },
+      { name: "Positioning Map", file: "campaigns/crustdata/phase-1-research/positioning-map-crustdata.md", publicPath: "/files/phase-1-research/positioning-map-crustdata.md", format: "MD", preview: "Visual competitive landscape showing Minerva's unique position at B2B+B2C intersection. Maps data depth vs. data breadth across all enrichment competitors." },
     ],
     gates: [
       { id: "gate-2", name: "Gate 2: Approve Research & Angles", description: "Human reviews all factual claims for accuracy. Every claim must have a source URL. Corrections propagate to all downstream files.", reviewedBy: "Theo (co-founder)" },
@@ -101,9 +102,9 @@ Theo caught that CrustData's HQ should be San Francisco (not Austin), and that p
       { name: "humanize-ai", purpose: "Kill AI vocabulary, enforce natural voice", description: "Based on Wikipedia's 'Signs of AI writing' field guide. Detects and rewrites stock phrases, hedging, em dashes, rule-of-three, promotional inflation. 1 fix across 4 files in this pass." },
     ],
     artifacts: [
-      { name: "Sales Battlecard", file: "campaigns/crustdata/phase-2-battlecard/battlecard-crustdata.md", format: "MD", preview: "Full competitive battlecard: side-by-side data comparison, 5 positioning angles with deployment instructions, objection handlers, segment-specific hooks, pricing comparison." },
-      { name: "One-Pager", file: "campaigns/crustdata/phase-2-battlecard/one-pager-crustdata.md", format: "MD", preview: "\"Your Agent Knows the Company. Does It Know the Person?\" — 14-dimension comparison table, 3 key differentiators, when-to-choose framework." },
-      { name: "Positioning Angles", file: "campaigns/crustdata/phase-2-battlecard/positioning-angles-crustdata.md", format: "MD", preview: "5 ranked angles with deployment priority by awareness stage. Outbound leads with B2B data quality, then expands to consumer data. Inbound leads with full differentiation." },
+      { name: "Sales Battlecard", file: "campaigns/crustdata/phase-2-battlecard/battlecard-crustdata.md", publicPath: "/files/phase-2-battlecard/battlecard-crustdata.md", format: "MD", preview: "Full competitive battlecard: side-by-side data comparison, 5 positioning angles with deployment instructions, objection handlers, segment-specific hooks, pricing comparison." },
+      { name: "One-Pager", file: "campaigns/crustdata/phase-2-battlecard/one-pager-crustdata.md", publicPath: "/files/phase-2-battlecard/one-pager-crustdata.md", format: "MD", preview: "\"Your Agent Knows the Company. Does It Know the Person?\" — 14-dimension comparison table, 3 key differentiators, when-to-choose framework." },
+      { name: "Positioning Angles", file: "campaigns/crustdata/phase-2-battlecard/positioning-angles-crustdata.md", publicPath: "/files/phase-2-battlecard/positioning-angles-crustdata.md", format: "MD", preview: "5 ranked angles with deployment priority by awareness stage. Outbound leads with B2B data quality, then expands to consumer data. Inbound leads with full differentiation." },
     ],
     gates: [
       { id: "gate-3", name: "Gate 3: Lock Messaging", description: "Positioning angles approved and ordered by awareness stage. Outbound angles match what CrustData followers already care about (B2B data quality). Consumer data is the close, not the open.", reviewedBy: "Justin + Theo" },
@@ -136,15 +137,15 @@ The humanize-AI pass found only 1 fix across 4 files (removed one "Be honest abo
       { name: "humanize-ai", purpose: "Final pass on all content", description: "All copy humanize-AI passed. Zero violations across all content pieces." },
     ],
     artifacts: [
-      { name: "3 Target Lists (CSV)", file: "campaigns/crustdata/phase-3a-lists/", format: "CSV", preview: "List A: CrustData customers/followers. List B: Adjacent prospects. List C: ICP + intent matched. 5 personas, 3 tiers (12 Tier 1, 89 Tier 2, 292 Tier 3)." },
-      { name: "Comparison Blog", file: "campaigns/crustdata/phase-3b-content/comparison-blog-crustdata.md", format: "MD", preview: "SEO-optimized deep comparison: field depth, contact graph, match rates, professional data quality, consumer data, pricing, compliance. Target: 'crustdata alternative' keyword." },
-      { name: "Landing Page", file: "campaigns/crustdata/phase-3b-content/landing-page-vs-crustdata.md", format: "MD", preview: "Full comparison landing page: hero + quick comparison + where Minerva wins + contact graph + consumer data + where CrustData wins + social proof + bake-off CTA + FAQ + full comparison table." },
-      { name: "LinkedIn Posts (3)", file: "campaigns/crustdata/phase-3b-content/linkedin-posts-crustdata.md", format: "MD", preview: "3 LinkedIn posts targeting CrustData followers. Each uses a different angle: data depth, contact graph, and bake-off challenge." },
-      { name: "Keyword Research + Calendar", file: "campaigns/crustdata/phase-3b-content/keyword-research-crustdata.md", format: "MD", preview: "4 content pillars, 90-day editorial calendar, keyword clusters targeting 'people enrichment API', 'B2B2C data', 'crustdata alternative'." },
-      { name: "Lead Magnet Concepts", file: "campaigns/crustdata/phase-3b-content/lead-magnet-concepts-crustdata.md", format: "MD", preview: "5 concepts evaluated. Winner: Bake-Off Kit (evaluation guide + scoring spreadsheet + free API credits). Anti-pattern identified: interactive calculators wrong for displacement campaigns." },
-      { name: "Bake-Off Evaluation Guide", file: "campaigns/crustdata/phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md", format: "MD/DOCX", preview: "8 weighted evaluation dimensions. Step-by-step guide for running a head-to-head vendor comparison. Professional .docx version with branded styling." },
-      { name: "Scoring Spreadsheet", file: "campaigns/crustdata/phase-3c-lead-magnet/bakeoff-scoring-spreadsheet.csv", format: "CSV", preview: "Pre-built scoring framework: 8 dimensions, weighted scoring, formula-driven total. Prospect fills in scores for each vendor." },
-      { name: "Juicebox Case Study", file: "campaigns/crustdata/phase-3b-content/case-study-juicebox.md", format: "MD", preview: "How Juicebox replaced 3 enrichment vendors with one Minerva API call. Match rates: 52% → 74%. Pipeline maintenance: 40hrs/month → 5hrs. Fields: 130 → 2,168. [Illustrative — needs Juicebox validation]" },
+      { name: "3 Target Lists (CSV)", file: "campaigns/crustdata/phase-3a-lists/", publicPath: "", format: "CSV", preview: "List A: CrustData customers/followers. List B: Adjacent prospects. List C: ICP + intent matched. 5 personas, 3 tiers (12 Tier 1, 89 Tier 2, 292 Tier 3)." },
+      { name: "Comparison Blog", file: "campaigns/crustdata/phase-3b-content/comparison-blog-crustdata.md", publicPath: "/files/phase-3b-content/comparison-blog-crustdata.md", format: "MD", preview: "SEO-optimized deep comparison: field depth, contact graph, match rates, professional data quality, consumer data, pricing, compliance. Target: 'crustdata alternative' keyword." },
+      { name: "Landing Page", file: "campaigns/crustdata/phase-3b-content/landing-page-vs-crustdata.md", publicPath: "/files/phase-3b-content/landing-page-vs-crustdata.md", format: "MD", preview: "Full comparison landing page: hero + quick comparison + where Minerva wins + contact graph + consumer data + where CrustData wins + social proof + bake-off CTA + FAQ + full comparison table." },
+      { name: "LinkedIn Posts (3)", file: "campaigns/crustdata/phase-3b-content/linkedin-posts-crustdata.md", publicPath: "/files/phase-3b-content/linkedin-posts-crustdata.md", format: "MD", preview: "3 LinkedIn posts targeting CrustData followers. Each uses a different angle: data depth, contact graph, and bake-off challenge." },
+      { name: "Keyword Research + Calendar", file: "campaigns/crustdata/phase-3b-content/keyword-research-crustdata.md", publicPath: "/files/phase-3b-content/keyword-research-crustdata.md", format: "MD", preview: "4 content pillars, 90-day editorial calendar, keyword clusters targeting 'people enrichment API', 'B2B2C data', 'crustdata alternative'." },
+      { name: "Lead Magnet Concepts", file: "campaigns/crustdata/phase-3b-content/lead-magnet-concepts-crustdata.md", publicPath: "/files/phase-3b-content/lead-magnet-concepts-crustdata.md", format: "MD", preview: "5 concepts evaluated. Winner: Bake-Off Kit (evaluation guide + scoring spreadsheet + free API credits). Anti-pattern identified: interactive calculators wrong for displacement campaigns." },
+      { name: "Bake-Off Evaluation Guide", file: "campaigns/crustdata/phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md", publicPath: "/files/phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md", format: "MD", preview: "8 weighted evaluation dimensions. Step-by-step guide for running a head-to-head vendor comparison. Professional .docx version with branded styling." },
+      { name: "Scoring Spreadsheet", file: "campaigns/crustdata/phase-3c-lead-magnet/bakeoff-scoring-spreadsheet.csv", publicPath: "/files/phase-3c-lead-magnet/bakeoff-scoring-spreadsheet.csv", format: "CSV", preview: "Pre-built scoring framework: 8 dimensions, weighted scoring, formula-driven total. Prospect fills in scores for each vendor." },
+      { name: "Juicebox Case Study", file: "campaigns/crustdata/phase-3b-content/case-study-juicebox.md", publicPath: "/files/phase-3b-content/case-study-juicebox.md", format: "MD", preview: "How Juicebox replaced 3 enrichment vendors with one Minerva API call. Match rates: 52% → 74%. Pipeline maintenance: 40hrs/month → 5hrs. Fields: 130 → 2,168. [Illustrative — needs Juicebox validation]" },
     ],
     gates: [
       { id: "gate-4a", name: "Gate 4A: Approve Lists", description: "Verify prospect lists are clean, exclusions applied, personas correctly segmented, tiers assigned.", reviewedBy: "Justin" },
@@ -175,8 +176,8 @@ Contact graph messaging ("best-in-class: 733M emails, 899M phones, 270M+ address
       { name: "humanize-ai", purpose: "Final pass on all sequences", description: "Incorporated Theo's feedback: 'over 2,000' not '2,168', breakup opens with 'just busy or not interested?', LinkedIn never says 'thanks for connecting', tone like a friend not a salesperson." },
     ],
     artifacts: [
-      { name: "Outbound Sequences", file: "campaigns/crustdata/phase-4a-sequences/outbound-sequences-crustdata.md", format: "MD", preview: "4-email sequence + LinkedIn track. Day 0: organic opener ('saw you follow crustdata'). Day 2: contact graph angle. Day 7: bake-off offer. Day 14: breakup. LinkedIn runs parallel with connection request + follow-up DM." },
-      { name: "Inbound Nurture (7 emails)", file: "campaigns/crustdata/phase-4b-nurture/inbound-nurture-sequence.md", format: "MD", preview: "7-email drip: welcome + bake-off → data depth → contact graph → case study → pricing → final offer. Segmented by use case. Triggered by lead magnet download." },
+      { name: "Outbound Sequences", file: "campaigns/crustdata/phase-4a-sequences/outbound-sequences-crustdata.md", publicPath: "/files/phase-4a-sequences/outbound-sequences-crustdata.md", format: "MD", preview: "4-email sequence + LinkedIn track. Day 0: organic opener ('saw you follow crustdata'). Day 2: contact graph angle. Day 7: bake-off offer. Day 14: breakup. LinkedIn runs parallel with connection request + follow-up DM." },
+      { name: "Inbound Nurture (7 emails)", file: "campaigns/crustdata/phase-4b-nurture/inbound-nurture-sequence.md", publicPath: "/files/phase-4b-nurture/inbound-nurture-sequence.md", format: "MD", preview: "7-email drip: welcome + bake-off → data depth → contact graph → case study → pricing → final offer. Segmented by use case. Triggered by lead magnet download." },
     ],
     gates: [
       { id: "gate-5a", name: "Gate 5A: Daniel Voice Check", description: "Outbound sequences sound like Daniel Saedi writing casually to a peer. No salesy language. Specific but not over-precise. Questions as CTAs.", reviewedBy: "Justin + Theo" },
@@ -216,9 +217,9 @@ Voice rules codified:
       { name: "direct-response-copy", purpose: "Follow-up templates and social proof", description: "3 follow-up variants (convinced → bake-off, thinking → free credits, need buy-in → share results). Social proof compilation." },
     ],
     artifacts: [
-      { name: "Discovery Script", file: "campaigns/crustdata/phase-5-sales-enablement/discovery-script.md", format: "MD", preview: "10 discovery questions organized by theme: current stack, pain points, data requirements, decision criteria. Opening framework and transition to demo." },
-      { name: "Demo Guide", file: "campaigns/crustdata/phase-5-sales-enablement/demo-guide.md", format: "MD", preview: "20-minute demo flow: confirm use case (3 min) → live API call (5 min) → data quality (4 min) → match rate demo (4 min) → pricing (2 min) → next steps (2 min). Segment-specific hooks for A-E." },
-      { name: "Follow-Up Templates", file: "campaigns/crustdata/phase-5-sales-enablement/follow-up-templates.md", format: "MD", preview: "3 variants: post-bake-off (show results), post-demo (share deck + pricing), post-no-response (value-add touchpoint). Each with merge fields." },
+      { name: "Discovery Script", file: "campaigns/crustdata/phase-5-sales-enablement/discovery-script.md", publicPath: "/files/phase-5-sales-enablement/discovery-script.md", format: "MD", preview: "10 discovery questions organized by theme: current stack, pain points, data requirements, decision criteria. Opening framework and transition to demo." },
+      { name: "Demo Guide", file: "campaigns/crustdata/phase-5-sales-enablement/demo-guide.md", publicPath: "/files/phase-5-sales-enablement/demo-guide.md", format: "MD", preview: "20-minute demo flow: confirm use case (3 min) → live API call (5 min) → data quality (4 min) → match rate demo (4 min) → pricing (2 min) → next steps (2 min). Segment-specific hooks for A-E." },
+      { name: "Follow-Up Templates", file: "campaigns/crustdata/phase-5-sales-enablement/follow-up-templates.md", publicPath: "/files/phase-5-sales-enablement/follow-up-templates.md", format: "MD", preview: "3 variants: post-bake-off (show results), post-demo (share deck + pricing), post-no-response (value-add touchpoint). Each with merge fields." },
     ],
     gates: [
       { id: "gate-6", name: "Gate 6: Full GO/NO-GO", description: "All assets reviewed. Campaign hypothesis locked. Tracking configured. Team aligned on messaging, objection handling, and follow-up process.", reviewedBy: "Justin + Daniel + Team" },
@@ -243,7 +244,7 @@ Competitive talking points cover: data breadth (24x more fields), data quality (
     description: "Hypothesis card, tracking setup, staggered launch timeline, success metrics, and expansion loop.",
     skills: [],
     artifacts: [
-      { name: "Launch Config", file: "campaigns/crustdata/phase-6-launch/launch-config-crustdata.md", format: "MD", preview: "Pre-launch checklist, LGM campaign setup, asset map, inbound automation, tracking/attribution, staggered timeline, success metrics, escalation/feedback loops, expansion loop definition." },
+      { name: "Launch Config", file: "campaigns/crustdata/phase-6-launch/launch-config-crustdata.md", publicPath: "/files/phase-6-launch/launch-config-crustdata.md", format: "MD", preview: "Pre-launch checklist, LGM campaign setup, asset map, inbound automation, tracking/attribution, staggered timeline, success metrics, escalation/feedback loops, expansion loop definition." },
     ],
     gates: [],
     details: `Campaign hypothesis: CrustData's followers who build with enrichment APIs will respond to "our B2B data is better too" because they already care about data quality and Minerva has provable advantages (99.47% job title fill, 71% mobile phones, multi-sourced standardization) plus 24x more fields.
@@ -273,11 +274,91 @@ export const skillsUsed: { name: string; phases: string; purpose: string; detail
 ];
 
 export const newSkillsCreated = [
-  { name: "outbound-voice", purpose: "Cold email and LinkedIn voice rules", detail: "Codified Daniel's voice: all lowercase, no salesy language, questions as CTAs, organic context ('saw you follow X'), specific but not over-precise ('over 2,000' not '2,168'). Reusable for any founder voice outbound." },
-  { name: "competitive-displacement", purpose: "Full vampire attack methodology", detail: "The complete displacement playbook: research → angles → dual-track (outbound + inbound) → test → scale. Includes awareness-stage mapping, lead-with-overlap principle, and expansion loop framework." },
-  { name: "tiered-personalization", purpose: "Scaling outbound quality", detail: "3-tier framework: Tier 1 (manual 1-to-1), Tier 2 (segment templates with merge fields), Tier 3 (abbreviated sequences). Includes future evolution to LLM-generated 1-to-1 for all tiers." },
-  { name: "sales-discovery", purpose: "Discovery call framework", detail: "10-question discovery structure organized by theme. Opening framework, qualification criteria, transition to demo. Segment-specific question variants." },
-  { name: "bake-off-design", purpose: "Trial/evaluation framework design", detail: "How to design a head-to-head evaluation that drives trials. Includes: weighted scoring dimensions, framing criteria for your strengths, maintaining credibility by including dimensions where competitors win." },
+  { name: "outbound-voice", purpose: "Cold email and LinkedIn voice rules", publicPath: "/files/skills/outbound-voice.md", detail: "Codified Daniel's voice: all lowercase, no salesy language, questions as CTAs, organic context ('saw you follow X'), specific but not over-precise ('over 2,000' not '2,168'). Reusable for any founder voice outbound." },
+  { name: "competitive-displacement", purpose: "Full vampire attack methodology", publicPath: "/files/skills/competitive-displacement.md", detail: "The complete displacement playbook: research → angles → dual-track (outbound + inbound) → test → scale. Includes awareness-stage mapping, lead-with-overlap principle, and expansion loop framework." },
+  { name: "tiered-personalization", purpose: "Scaling outbound quality", publicPath: "/files/skills/tiered-personalization.md", detail: "3-tier framework: Tier 1 (manual 1-to-1), Tier 2 (segment templates with merge fields), Tier 3 (abbreviated sequences). Includes future evolution to LLM-generated 1-to-1 for all tiers." },
+  { name: "sales-discovery", purpose: "Discovery call framework", publicPath: "/files/skills/sales-discovery.md", detail: "10-question discovery structure organized by theme. Opening framework, qualification criteria, transition to demo. Segment-specific question variants." },
+  { name: "bake-off-design", purpose: "Trial/evaluation framework design", publicPath: "/files/skills/bake-off-design.md", detail: "How to design a head-to-head evaluation that drives trials. Includes: weighted scoring dimensions, framing criteria for your strengths, maintaining credibility by including dimensions where competitors win." },
+];
+
+// Full file registry for the "All Files" browser
+export const allFiles: { category: string; files: { name: string; path: string; publicPath: string }[] }[] = [
+  {
+    category: "Brand (Config)",
+    files: [
+      { name: "Positioning", path: "brand/positioning.md", publicPath: "/files/brand/positioning.md" },
+      { name: "Audience Definitions", path: "brand/audience.md", publicPath: "/files/brand/audience.md" },
+      { name: "Competitor Profiles", path: "brand/competitors.md", publicPath: "/files/brand/competitors.md" },
+      { name: "Voice Profile", path: "brand/voice-profile.md", publicPath: "/files/brand/voice-profile.md" },
+      { name: "Differentiation Cheatsheet", path: "brand/differentiation-cheatsheet.md", publicPath: "/files/brand/differentiation-cheatsheet.md" },
+    ],
+  },
+  {
+    category: "Phase 1 — Research",
+    files: [
+      { name: "Competitor Research Brief", path: "phase-1-research/competitor-research-crustdata.md", publicPath: "/files/phase-1-research/competitor-research-crustdata.md" },
+      { name: "Customer Logo Analysis", path: "phase-1-research/competitor-logos-crustdata.md", publicPath: "/files/phase-1-research/competitor-logos-crustdata.md" },
+      { name: "Positioning Map", path: "phase-1-research/positioning-map-crustdata.md", publicPath: "/files/phase-1-research/positioning-map-crustdata.md" },
+    ],
+  },
+  {
+    category: "Phase 2 — Battlecard",
+    files: [
+      { name: "Sales Battlecard", path: "phase-2-battlecard/battlecard-crustdata.md", publicPath: "/files/phase-2-battlecard/battlecard-crustdata.md" },
+      { name: "One-Pager", path: "phase-2-battlecard/one-pager-crustdata.md", publicPath: "/files/phase-2-battlecard/one-pager-crustdata.md" },
+      { name: "Positioning Angles", path: "phase-2-battlecard/positioning-angles-crustdata.md", publicPath: "/files/phase-2-battlecard/positioning-angles-crustdata.md" },
+    ],
+  },
+  {
+    category: "Phase 3 — Content & Lead Magnet",
+    files: [
+      { name: "Comparison Blog", path: "phase-3b-content/comparison-blog-crustdata.md", publicPath: "/files/phase-3b-content/comparison-blog-crustdata.md" },
+      { name: "Landing Page (vs CrustData)", path: "phase-3b-content/landing-page-vs-crustdata.md", publicPath: "/files/phase-3b-content/landing-page-vs-crustdata.md" },
+      { name: "LinkedIn Posts", path: "phase-3b-content/linkedin-posts-crustdata.md", publicPath: "/files/phase-3b-content/linkedin-posts-crustdata.md" },
+      { name: "Keyword Research + Calendar", path: "phase-3b-content/keyword-research-crustdata.md", publicPath: "/files/phase-3b-content/keyword-research-crustdata.md" },
+      { name: "Lead Magnet Concepts", path: "phase-3b-content/lead-magnet-concepts-crustdata.md", publicPath: "/files/phase-3b-content/lead-magnet-concepts-crustdata.md" },
+      { name: "Juicebox Case Study", path: "phase-3b-content/case-study-juicebox.md", publicPath: "/files/phase-3b-content/case-study-juicebox.md" },
+      { name: "Bake-Off Evaluation Guide", path: "phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md", publicPath: "/files/phase-3c-lead-magnet/bakeoff-kit-evaluation-guide.md" },
+      { name: "Scoring Spreadsheet", path: "phase-3c-lead-magnet/bakeoff-scoring-spreadsheet.csv", publicPath: "/files/phase-3c-lead-magnet/bakeoff-scoring-spreadsheet.csv" },
+    ],
+  },
+  {
+    category: "Phase 4 — Sequences",
+    files: [
+      { name: "Outbound Sequences (LGM)", path: "phase-4a-sequences/outbound-sequences-crustdata.md", publicPath: "/files/phase-4a-sequences/outbound-sequences-crustdata.md" },
+      { name: "Inbound Nurture (7 emails)", path: "phase-4b-nurture/inbound-nurture-sequence.md", publicPath: "/files/phase-4b-nurture/inbound-nurture-sequence.md" },
+    ],
+  },
+  {
+    category: "Phase 5 — Sales Enablement",
+    files: [
+      { name: "Discovery Script", path: "phase-5-sales-enablement/discovery-script.md", publicPath: "/files/phase-5-sales-enablement/discovery-script.md" },
+      { name: "Demo Guide", path: "phase-5-sales-enablement/demo-guide.md", publicPath: "/files/phase-5-sales-enablement/demo-guide.md" },
+      { name: "Follow-Up Templates", path: "phase-5-sales-enablement/follow-up-templates.md", publicPath: "/files/phase-5-sales-enablement/follow-up-templates.md" },
+    ],
+  },
+  {
+    category: "Phase 6 — Launch",
+    files: [
+      { name: "Launch Config", path: "phase-6-launch/launch-config-crustdata.md", publicPath: "/files/phase-6-launch/launch-config-crustdata.md" },
+    ],
+  },
+  {
+    category: "Skills (New — Created During Build)",
+    files: [
+      { name: "Outbound Voice", path: "skills/outbound-voice.md", publicPath: "/files/skills/outbound-voice.md" },
+      { name: "Competitive Displacement", path: "skills/competitive-displacement.md", publicPath: "/files/skills/competitive-displacement.md" },
+      { name: "Tiered Personalization", path: "skills/tiered-personalization.md", publicPath: "/files/skills/tiered-personalization.md" },
+      { name: "Sales Discovery", path: "skills/sales-discovery.md", publicPath: "/files/skills/sales-discovery.md" },
+      { name: "Bake-Off Design", path: "skills/bake-off-design.md", publicPath: "/files/skills/bake-off-design.md" },
+    ],
+  },
+  {
+    category: "System",
+    files: [
+      { name: "Architecture Overview", path: "system/system-architecture-overview.md", publicPath: "/files/system/system-architecture-overview.md" },
+    ],
+  },
 ];
 
 export const keyLearnings = [
