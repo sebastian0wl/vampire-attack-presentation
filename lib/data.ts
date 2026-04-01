@@ -177,6 +177,8 @@ Contact graph messaging ("best-in-class: 733M emails, 899M phones, 270M+ address
     ],
     artifacts: [
       { name: "Outbound Sequences", file: "campaigns/crustdata/phase-4a-sequences/outbound-sequences-crustdata.md", publicPath: "/files/phase-4a-sequences/outbound-sequences-crustdata.md", format: "MD", preview: "4-email sequence + LinkedIn track. Day 0: organic opener ('saw you follow crustdata'). Day 2: contact graph angle. Day 7: bake-off offer. Day 14: breakup. LinkedIn runs parallel with connection request + follow-up DM." },
+      { name: "Tier 1 Personalization Guide", file: "campaigns/crustdata/phase-3a-lists/v3_tier1_personalization.md", publicPath: "/files/phase-4a-sequences/tier1-personalization-guide.md", format: "MD", preview: "All 12 Tier 1 targets with custom Email 1 openers + LinkedIn connection requests. Each written 1-to-1 using enrichment data: role, company, displacement rationale, and segment-specific angle." },
+      { name: "1-to-1 Personalization Examples", file: "campaigns/crustdata/phase-4a-sequences/1-to-1-personalization-examples.md", publicPath: "/files/phase-4a-sequences/1-to-1-personalization-examples.md", format: "MD", preview: "Before/after showing template emails vs 1-to-1 personalized emails across all 3 tiers. Shows how 2,168 enrichment fields enable unique copy per person — the system eats its own cooking." },
       { name: "Inbound Nurture (7 emails)", file: "campaigns/crustdata/phase-4b-nurture/inbound-nurture-sequence.md", publicPath: "/files/phase-4b-nurture/inbound-nurture-sequence.md", format: "MD", preview: "7-email drip: welcome + bake-off → data depth → contact graph → case study → pricing → final offer. Segmented by use case. Triggered by lead magnet download." },
     ],
     gates: [
@@ -326,6 +328,8 @@ export const allFiles: { category: string; files: { name: string; path: string; 
     category: "Phase 4 — Sequences",
     files: [
       { name: "Outbound Sequences (LGM)", path: "phase-4a-sequences/outbound-sequences-crustdata.md", publicPath: "/files/phase-4a-sequences/outbound-sequences-crustdata.md" },
+      { name: "Tier 1 Personalization Guide (12 targets)", path: "phase-4a-sequences/tier1-personalization-guide.md", publicPath: "/files/phase-4a-sequences/tier1-personalization-guide.md" },
+      { name: "1-to-1 Personalization Examples (all tiers)", path: "phase-4a-sequences/1-to-1-personalization-examples.md", publicPath: "/files/phase-4a-sequences/1-to-1-personalization-examples.md" },
       { name: "Inbound Nurture (7 emails)", path: "phase-4b-nurture/inbound-nurture-sequence.md", publicPath: "/files/phase-4b-nurture/inbound-nurture-sequence.md" },
     ],
   },

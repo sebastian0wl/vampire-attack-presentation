@@ -8,7 +8,7 @@ import {
   ChevronDown, ChevronRight, FileText, Zap, Shield, Users,
   ArrowRight, ArrowDown, CheckCircle2, AlertTriangle, BookOpen, Mail,
   Link as LinkedinIcon, Clock, Target, Layers, GitBranch, Brain, Wrench,
-  BarChart3, Lightbulb, X, Download, FolderOpen, Eye
+  BarChart3, Lightbulb, X, Download, FolderOpen, Eye, Sparkles
 } from "lucide-react";
 
 type Tab = "overview" | "pipeline" | "files" | "sequences" | "skills" | "learnings" | "future";
@@ -625,12 +625,107 @@ function SequencesTab({
         ))}
       </div>
 
+      {/* Tier 1 Personalization Showcase */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-purple-400" />
+            <h3 className="text-sm font-semibold text-white">Tier 1 Personalization: 1-to-1 Emails</h3>
+          </div>
+          <button
+            onClick={() => onOpenFile("/files/phase-4a-sequences/tier1-personalization-guide.md", "Tier 1 Personalization Guide")}
+            className="flex items-center gap-2 rounded-lg bg-zinc-800 px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-700 transition-colors"
+          >
+            <Eye size={12} /> View all 12
+          </button>
+        </div>
+        <p className="text-xs text-zinc-400 mb-4">Each Tier 1 target gets a hand-written email using their title, company, displacement score, and inferred use case. These aren&apos;t templates with merge fields — they&apos;re unique messages.</p>
+
+        <div className="space-y-4">
+          {/* Stephen Salaka */}
+          <div className="rounded-xl border border-purple-500/20 bg-purple-950/10 overflow-hidden">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-purple-500/10 bg-purple-950/20">
+              <div className="h-8 w-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-xs font-bold text-purple-400 shrink-0">#1</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-semibold text-white">Stephen Salaka</span>
+                  <span className="text-[10px] text-zinc-400">CTO, MealMatch AI</span>
+                  <span className="rounded-full bg-purple-500/15 px-1.5 py-0.5 text-[9px] font-medium text-purple-300">Score: 75</span>
+                  <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400">Segment A</span>
+                </div>
+                <p className="text-[10px] text-zinc-500 mt-0.5">Why Tier 1: CTO choosing the data stack. MealMatch needs both restaurant/vendor data AND consumer preference data. CrustData only covers half.</p>
+              </div>
+            </div>
+            <div className="p-4">
+              <pre className="text-xs text-zinc-300 whitespace-pre-wrap font-sans leading-relaxed bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">{`hey stephen, saw you follow crustdata. are you using them for the
+data layer at mealmatch, or still evaluating?
+
+we do people enrichment. over 2,000 fields per person in one call,
+professional and consumer. for a company matching people to meals,
+how are you thinking about consumer context? most B2B-only APIs
+won't get you there. curious if that's come up yet.
+
+daniel`}</pre>
+              <p className="text-[10px] text-zinc-500 mt-2 italic">Angle: B2B-only API can't power a consumer matching product</p>
+            </div>
+          </div>
+
+          {/* Danny Wen */}
+          <div className="rounded-xl border border-purple-500/20 bg-purple-950/10 overflow-hidden">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-purple-500/10 bg-purple-950/20">
+              <div className="h-8 w-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-xs font-bold text-purple-400 shrink-0">#4</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-semibold text-white">Danny Wen</span>
+                  <span className="text-[10px] text-zinc-400">GTM/Strategy, Findem</span>
+                  <span className="rounded-full bg-purple-500/15 px-1.5 py-0.5 text-[9px] font-medium text-purple-300">Score: 55</span>
+                  <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-[9px] text-zinc-400">Segment C</span>
+                </div>
+                <p className="text-[10px] text-zinc-500 mt-0.5">Why Tier 1: Findem IS a people search platform — they likely use upstream data providers. If he's evaluating sources for Findem's graph, we're a direct upgrade.</p>
+              </div>
+            </div>
+            <div className="p-4">
+              <pre className="text-xs text-zinc-300 whitespace-pre-wrap font-sans leading-relaxed bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">{`hey danny, saw you follow crustdata. running GTM at findem, you're
+probably deeper in the people data world than anyone. curious — is
+findem using crustdata as an upstream source, or do you have your own
+enrichment pipeline? we power similar use cases with 70-80% match
+rates on mixed-identifier files and over 2,000 fields per person.
+might be worth comparing what we return vs what you're ingesting now.
+
+daniel`}</pre>
+              <p className="text-[10px] text-zinc-500 mt-2 italic">Angle: upstream data source replacement for a people intelligence platform</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Before/After callout */}
+        <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+              <Zap size={14} className="text-amber-400" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-white mb-1">The system eats its own cooking</p>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">We use Minerva&apos;s 2,168-field enrichment to write personalized emails selling Minerva&apos;s enrichment. The outbound campaign IS the product demo. Wave 2/3 scales this to all 393 targets using LLM generation — every email unique, ~$0.01-0.03 per email.</p>
+              <button
+                onClick={() => onOpenFile("/files/phase-4a-sequences/1-to-1-personalization-examples.md", "1-to-1 Personalization Examples")}
+                className="mt-2 flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                <Eye size={10} /> View before/after comparison across all tiers
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Related files */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
         <p className="text-xs font-medium text-zinc-500 mb-3">RELATED FILES</p>
         <div className="grid md:grid-cols-2 gap-2">
           {[
             { name: "Outbound Sequences (full)", path: "/files/phase-4a-sequences/outbound-sequences-crustdata.md" },
+            { name: "Tier 1 Personalization Guide (12 targets)", path: "/files/phase-4a-sequences/tier1-personalization-guide.md" },
+            { name: "1-to-1 Personalization Examples (all tiers)", path: "/files/phase-4a-sequences/1-to-1-personalization-examples.md" },
             { name: "Inbound Nurture (7 emails)", path: "/files/phase-4b-nurture/inbound-nurture-sequence.md" },
             { name: "Outbound Voice Skill", path: "/files/skills/outbound-voice.md" },
             { name: "Tiered Personalization Skill", path: "/files/skills/tiered-personalization.md" },
